@@ -1,0 +1,36 @@
+# Основные зависимости
+streamlit
+pandas
+numpy
+plotly
+
+# Анализ данных и ML
+scikit-learn
+statsmodels
+pyod
+prophet
+numba
+llvmlite     # Совместимость с Python 3.13
+
+# Визуализация
+seaborn
+matplotlib
+altair
+
+# Утилиты и обработка данных
+python-dateutil
+pytz
+openpyxl
+pydantic
+loguru
+python-dotenv
+scipy
+
+# Для работы с Excel (экспорт)
+xlsxwriter
+
+# Дополнительные утилиты
+joblib
+threadpoolctl
+
+
