@@ -20,10 +20,8 @@ class ABCTab:
 
         with tab1:
             self._render_abc_analysis(df, metrics)
-
         with tab2:
             self._render_xyz_analysis(df)
-
         with tab3:
             self._render_pareto_analysis(metrics)
 
@@ -36,13 +34,13 @@ class ABCTab:
             return
 
         # Настройки классификации
-        col1, col2, col3 = st.columns(3)
+        col1, col2, _ = st.columns(3)
         with col1:
             a_threshold = st.slider("Порог для класса A (%)", 70, 90, 80, 1)
         with col2:
             b_threshold = st.slider("Порог для класса B (%)", 85, 98, 95, 1)
 
-        # Пересчитываем классификацию
+        # Пересчёт классификации
         abc_data = abc_data.sort_values('value', ascending=False)
         abc_data['cumulative_percentage'] = (
             abc_data['value'].cumsum() / abc_data['value'].sum() * 100
@@ -53,8 +51,7 @@ class ABCTab:
                 return 'A'
             elif row['cumulative_percentage'] <= b_threshold:
                 return 'B'
-            else:
-                return 'C'
+            return 'C'
 
         abc_data['abc_class'] = abc_data.apply(assign_class, axis=1)
 
@@ -84,26 +81,26 @@ class ABCTab:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # Статистика
+        # Статистика по классам
         st.subheader("Статистика по классам ABC")
 
-        first_col = abc_data.columns[0]  # обычно 'category' или 'entity'
-        class_summary = abc_data.groupby('abc_class').agg({
+        first_col = abc_data.columns[0]  # обычно category или entity
+        summary = abc_data.groupby('abc_class').agg({
             first_col: 'count',
             'value': ['sum', 'mean']
         }).round(0)
 
-        class_summary.columns = ['Количество', 'Сумма', 'Среднее']
-        st.dataframe(class_summary, use_container_width=True)
+        summary.columns = ['Количество', 'Сумма', 'Среднее']
+        st.dataframe(summary, use_container_width=True)
 
     def _render_xyz_analysis(self, df: pd.DataFrame):
         st.subheader("XYZ Анализ стабильности")
 
         if 'date' not in df.columns or 'category' not in df.columns:
-            st.warning("Для XYZ анализа необходимы данные по времени и категориям.")
+            st.warning("Для XYZ анализа нужны колонки 'date' и 'category'")
             return
 
-        st.info("Простая демонстрация XYZ-анализа")
+        st.info("Простая демонстрация XYZ-анализа (в продакшене — реальные расчёты)")
 
         categories = ['Электроника', 'Одежда', 'Продукты', 'Бытовая техника', 'Косметика']
         stability = ['Высокая', 'Средняя', 'Низкая', 'Средняя', 'Высокая']
@@ -163,19 +160,11 @@ class ABCTab:
             title='Кривая Парето',
             xaxis_title='Объект',
             yaxis_title='Значение',
-            yaxis2=dict(
-                title='Кумулятивный %',
-                overlaying='y',
-                side='right',
-                range=[0, 100]
-            ),
+            yaxis2=dict(title='Кумулятивный %', overlaying='y', side='right', range=[0, 100]),
             height=500
         )
 
         st.plotly_chart(fig, use_container_width=True)
 
         top_80 = pareto_data[pareto_data['is_top_80']]
-        st.info(
-            f"**{len(top_80)} из {len(pareto_data)}** объектов дают **80%** всего значения\n\n"
-            f"Остальные **{len(pareto_data) - len(top_80)}** объектов дают только **20%**"
-        )
+        st.info(f"**{len(top_80)} из {len(pareto_data)}** объектов дают **80%** всего значения")

@@ -13,11 +13,11 @@ class TabManager:
 
     def __init__(self):
         self.tabs = {
-            'overview':       OverviewTab(),
-            'charts':         ChartsTab(),
-            'anomalies':      AnomaliesTab(),
-            'abc':            ABCTab(),
-            'forecast':       ForecastTab(),
+            'overview': OverviewTab(),
+            'charts': ChartsTab(),
+            'anomalies': AnomaliesTab(),
+            'abc': ABCTab(),
+            'forecast': ForecastTab(),
             'recommendations': RecommendationsTab()
         }
 
